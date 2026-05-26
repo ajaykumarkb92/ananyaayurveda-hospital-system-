@@ -1,158 +1,251 @@
 <!DOCTYPE html>
 <html lang="en" ng-app="ayurvedicApp">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ayurvedic Hospital Management System</title>
-    
-    <!-- External CSS -->
-    <link rel="stylesheet" href="style.css">
-    
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ananya Ayurveda | Hospital Management System</title>
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css" />
+
     <!-- AngularJS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
-    
-    <!-- Application Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.2/angular.min.js"></script>
+  </head>
+  <body ng-controller="MainController as vm">
+    <!-- Header -->
+    <div class="header">
+      <div class="container">
+        <h1>🌿 Ananya Ayurveda</h1>
+        <p>Complete Patient Records & Holistic Case Management</p>
+      </div>
+    </div>
+
+    <div class="container">
+      <!-- Search Section -->
+      <div class="search-section">
+        <div class="search-grid">
+          <div class="search-card">
+            <h3>🔍 Find Patient</h3>
+            <div class="input-group">
+              <input
+                type="text"
+                ng-model="vm.searchTerm"
+                placeholder="Enter Patient ID or Name"
+                ng-enter="vm.searchPatient()"
+              />
+              <button class="btn-primary" ng-click="vm.searchPatient()">
+                Search
+              </button>
+            </div>
+          </div>
+
+          <div class="search-card">
+            <h3>🔎 Search Records</h3>
+            <div class="input-group">
+              <input
+                type="text"
+                ng-model="vm.keyword"
+                placeholder="Search symptoms or prescriptions"
+                ng-enter="vm.searchByKeyword()"
+              />
+              <button class="btn-primary" ng-click="vm.searchByKeyword()">
+                Search
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="stats-bar">
+        <div class="stats-item">
+          <span class="stats-number">{{vm.stats.totalPatients}}</span>
+          <span class="stats-label">Total Patients</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-number">{{vm.stats.totalCases}}</span>
+          <span class="stats-label">Case Studies</span>
+        </div>
+        <div class="stats-item">
+          <span class="stats-number">100%</span>
+          <span class="stats-label">Ayurvedic Care</span>
+        </div>
+      </div>
+
+      <!-- Patient Form -->
+      <div class="form-container" ng-show="vm.showPatientForm">
+        <h2 ng-show="!vm.isNewPatient">
+          👤 {{vm.currentPatient.name}}
+          <small>ID: {{vm.currentPatient.patient_id}}</small>
+        </h2>
+        <h2 ng-show="vm.isNewPatient">📝 New Patient Registration</h2>
+
+        <div ng-show="vm.isNewPatient">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input
+              type="text"
+              ng-model="vm.newPatientData.name"
+              placeholder="Enter patient's full name"
+            />
+          </div>
+
+          <div class="form-group">
+            <label>Gender *</label>
+            <select ng-model="vm.newPatientData.gender">
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Department *</label>
+          <select ng-model="vm.caseData.category">
+            <option value="Ortho">🦵 Orthopedics</option>
+            <option value="Nephro">💧 Nephrology (Kidney)</option>
+            <option value="Cardio">❤️ Cardiology</option>
+            <option value="Neuro">🧠 Neurology</option>
+            <option value="Gastro">🌿 Gastroenterology</option>
+            <option value="Skin">✨ Dermatology</option>
+            <option value="Respiratory">🌬️ Respiratory</option>
+            <option value="Ayurvedic Panchakarma">🌀 Panchakarma</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>📋 Symptoms & Patient History</label>
+          <textarea
+            rows="4"
+            ng-model="vm.caseData.symptoms"
+            placeholder="Document the patient's condition, symptoms, and what they described..."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label>💊 Prescription & Treatment Plan</label>
+          <textarea
+            rows="4"
+            ng-model="vm.caseData.prescription"
+            placeholder="Ayurvedic medicines, dosages, diet recommendations, and lifestyle changes..."
+          ></textarea>
+        </div>
+
+        <div class="button-group">
+          <button
+            class="btn-primary"
+            ng-click="vm.savePatient()"
+            ng-show="vm.isNewPatient"
+          >
+            💾 Save Patient Record
+          </button>
+          <button
+            class="btn-primary"
+            ng-click="vm.addCaseStudy()"
+            ng-show="!vm.isNewPatient"
+          >
+            ➕ Add Case Study
+          </button>
+          <button class="btn-secondary" ng-click="vm.cancelForm()">
+            Cancel
+          </button>
+        </div>
+      </div>
+
+      <!-- Case Studies Section -->
+      <div
+        class="case-studies-section"
+        ng-show="vm.showExistingPatient && !vm.isNewPatient"
+      >
+        <div class="case-studies-header">
+          <h3>📚 Previous Case Studies</h3>
+          <button
+            class="btn-outline"
+            ng-click="vm.showNewCaseForm = !vm.showNewCaseForm"
+          >
+            {{vm.showNewCaseForm ? 'Cancel' : '+ New Case Study'}}
+          </button>
+        </div>
+
+        <div
+          ng-repeat="case in vm.currentPatient.case_studies"
+          class="case-card"
+        >
+          <h4>{{case.category}}</h4>
+          <span class="case-date">{{case.created_at | date:'medium'}}</span>
+          <p><strong>📝 Symptoms:</strong> {{case.symptoms}}</p>
+          <p><strong>💊 Prescription:</strong> {{case.prescription}}</p>
+        </div>
+      </div>
+
+      <!-- Search Results -->
+      <div class="search-results" ng-show="vm.searchResults.length > 0">
+        <h3 style="margin-bottom: 20px">
+          📋 Found {{vm.searchResults.length}} Results
+        </h3>
+        <div
+          ng-repeat="result in vm.searchResults"
+          class="result-item"
+          ng-click="vm.viewPatient(result.patient_id)"
+        >
+          <strong>🆔 {{result.patient_id}}</strong> —
+          <strong>{{result.name}}</strong> ({{result.gender}})<br />
+          <strong>Department:</strong> {{result.category}}<br />
+          <strong>Symptoms:</strong> {{result.symptoms | limitTo:120}}...<br />
+          <small style="color: var(--gray-600)"
+            >📅 {{result.created_at | date:'medium'}}</small
+          >
+        </div>
+      </div>
+
+      <!-- Testimonials Section (Inspired by Circle Medical) -->
+      <div class="testimonials-section">
+        <div class="testimonials-header">
+          <h2>✨ What Our Patients Say</h2>
+          <p style="color: var(--gray-600)">
+            Healing lives with authentic Ayurvedic care
+          </p>
+        </div>
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <div class="testimonial-text">
+              "The doctors truly listen and understand. My chronic joint pain
+              has improved significantly with their Ayurvedic treatment."
+            </div>
+            <div class="testimonial-author">— Meera Sharma</div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-text">
+              "Panchakarma therapy changed my life. The personalized care and
+              attention to detail is remarkable."
+            </div>
+            <div class="testimonial-author">— Rajiv Menon</div>
+          </div>
+          <div class="testimonial-card">
+            <div class="testimonial-text">
+              "Finally found a hospital that combines traditional wisdom with
+              modern convenience. Highly recommended!"
+            </div>
+            <div class="testimonial-author">— Anita Desai</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Toast -->
+    <div ng-show="vm.message" class="message {{vm.messageType}}">
+      {{vm.message}}
+    </div>
+
+    <!-- Scripts -->
     <script src="database.js"></script>
     <script src="app.js"></script>
-</head>
-<body ng-controller="MainController as vm">
-    <div class="container">
-        <!-- Header Section -->
-        <div class="header">
-            <h1>🏥 Ayurvedic Hospital Management System</h1>
-            <p>Complete Patient Records & Case Management (Offline Mode)</p>
-        </div>
-        
-        <!-- Search Boxes -->
-        <div class="search-boxes">
-            <div class="search-card">
-                <h3>🔍 Search by Patient ID or Name</h3>
-                <div class="input-group">
-                    <input type="text" 
-                           ng-model="vm.searchTerm" 
-                           placeholder="Enter Patient ID or Name" 
-                           ng-enter="vm.searchPatient()">
-                    <button ng-click="vm.searchPatient()">Search</button>
-                </div>
-            </div>
-            
-            <div class="search-card">
-                <h3>🔎 Search by Symptoms or Prescription</h3>
-                <div class="input-group">
-                    <input type="text" 
-                           ng-model="vm.keyword" 
-                           placeholder="Enter keywords to search" 
-                           ng-enter="vm.searchByKeyword()">
-                    <button ng-click="vm.searchByKeyword()">Search</button>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Statistics Section -->
-        <div class="stats">
-            <strong>📊 System Stats:</strong> 
-            Total Patients: {{vm.stats.totalPatients}} | 
-            Total Cases: {{vm.stats.totalCases}}
-        </div>
-        
-        <!-- Patient Form (New or Existing) -->
-        <div class="form-container" ng-show="vm.showPatientForm">
-            <h2 ng-show="!vm.isNewPatient">
-                👤 {{vm.currentPatient.name}} - Patient Profile
-                <small>ID: {{vm.currentPatient.patient_id}}</small>
-            </h2>
-            <h2 ng-show="vm.isNewPatient">📝 New Patient Registration</h2>
-            
-            <!-- New Patient Fields -->
-            <div ng-show="vm.isNewPatient">
-                <div class="form-group">
-                    <label>Patient Name *</label>
-                    <input type="text" 
-                           ng-model="vm.newPatientData.name" 
-                           placeholder="Enter full name" 
-                           required>
-                </div>
-                
-                <div class="form-group">
-                    <label>Gender *</label>
-                    <select ng-model="vm.newPatientData.gender">
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-            </div>
-            
-            <!-- Case Study Fields -->
-            <div class="form-group">
-                <label>Category / Department *</label>
-                <select ng-model="vm.caseData.category">
-                    <option value="Ortho">Ortho (Orthopedics)</option>
-                    <option value="Nephro">Nephro (Kidney)</option>
-                    <option value="Cardio">Cardio (Heart)</option>
-                    <option value="Neuro">Neuro (Nervous System)</option>
-                    <option value="Gastro">Gastro (Digestive)</option>
-                    <option value="Skin">Skin (Dermatology)</option>
-                    <option value="Respiratory">Respiratory (Lungs)</option>
-                    <option value="Ayurvedic Panchakarma">Ayurvedic Panchakarma</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>📋 Symptoms (What patient described)</label>
-                <textarea rows="4" 
-                          ng-model="vm.caseData.symptoms" 
-                          placeholder="Enter detailed symptoms as described by patient..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>💊 Prescription (Doctor's prescription)</label>
-                <textarea rows="4" 
-                          ng-model="vm.caseData.prescription" 
-                          placeholder="Enter Ayurvedic medicines, dosage, and treatment plan..."></textarea>
-            </div>
-            
-            <div class="button-group">
-                <button ng-click="vm.savePatient()" ng-show="vm.isNewPatient">💾 Save Patient & Case</button>
-                <button ng-click="vm.addCaseStudy()" ng-show="!vm.isNewPatient">➕ Add Case Study</button>
-                <button ng-click="vm.cancelForm()" class="btn-secondary">❌ Cancel</button>
-            </div>
-        </div>
-        
-        <!-- Existing Patient Case Studies -->
-        <div class="form-container" ng-show="vm.showExistingPatient && !vm.isNewPatient">
-            <h3>📚 Previous Case Studies</h3>
-            <div ng-repeat="case in vm.currentPatient.case_studies" class="case-study">
-                <h4>{{case.category}} - {{case.created_at | date:'medium'}}</h4>
-                <p><strong>📝 Symptoms:</strong> {{case.symptoms}}</p>
-                <p><strong>💊 Prescription:</strong> {{case.prescription}}</p>
-            </div>
-            
-            <button ng-click="vm.showNewCaseForm = !vm.showNewCaseForm" class="btn-secondary">
-                {{vm.showNewCaseForm ? '❌ Cancel' : '➕ Create New Case Study'}}
-            </button>
-        </div>
-        
-        <!-- Search Results -->
-        <div class="search-results" ng-show="vm.searchResults.length > 0">
-            <h3>📋 Search Results ({{vm.searchResults.length}} found)</h3>
-            <p class="search-hint">Click on any result to view complete patient profile</p>
-            <div ng-repeat="result in vm.searchResults" 
-                 class="result-item" 
-                 ng-click="vm.viewPatient(result.patient_id)">
-                <strong>🆔 {{result.patient_id}}</strong> - 
-                <strong>{{result.name}}</strong> ({{result.gender}})<br>
-                <strong>📂 Category:</strong> {{result.category}}<br>
-                <strong>📝 Symptoms:</strong> {{result.symptoms | limitTo:100}}...<br>
-                <strong>💊 Prescription:</strong> {{result.prescription | limitTo:100}}...<br>
-                <small>📅 {{result.created_at | date:'medium'}}</small>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Message Notification -->
-    <div ng-show="vm.message" class="message {{vm.messageType}}">
-        {{vm.message}}
-    </div>
-</body>
+  </body>
 </html>
