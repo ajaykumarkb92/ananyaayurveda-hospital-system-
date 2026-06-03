@@ -1,9 +1,12 @@
+// Create the AngularJS module FIRST
+const app = angular.module('ayurvedicApp', []);
+
 // Enter key directive
 app.directive('ngEnter', function() {
     return function(scope, element, attrs) {
         element.bind("keydown keypress", function(event) {
             if(event.which === 13) {
-                scope.$apply(function(){
+                scope.$apply(function() {
                     scope.$eval(attrs.ngEnter);
                 });
                 event.preventDefault();
@@ -14,7 +17,7 @@ app.directive('ngEnter', function() {
 
 app.controller('MainController', ['$http', '$timeout', function($http, $timeout) {
     const vm = this;
-    
+
     // Variables
     vm.searchTerm = '';
     vm.keyword = '';
@@ -26,7 +29,7 @@ app.controller('MainController', ['$http', '$timeout', function($http, $timeout)
     vm.message = '';
     vm.messageType = '';
     vm.stats = { totalPatients: 0, totalCases: 0 };
-    
+
     // Data models
     vm.currentPatient = {
         patient_id: '',
@@ -34,55 +37,179 @@ app.controller('MainController', ['$http', '$timeout', function($http, $timeout)
         gender: '',
         case_studies: []
     };
-    
+
     vm.newPatientData = {
         name: '',
         gender: 'Male'
     };
-    
+
     vm.caseData = {
         category: 'Ortho',
         symptoms: '',
-        prescription: ''
+        prescription: '',
+        specialized: {}
     };
-    
+
+    // Initialize specialized data structure
+    function initSpecializedData() {
+        if (!vm.caseData.specialized) {
+            vm.caseData.specialized = {};
+        }
+    }
+
+    // When category changes, initialize specialized data structure
+    vm.onCategoryChange = function() {
+        initSpecializedData();
+        const category = vm.caseData.category;
+        
+        // Reset specialized data for new category
+        vm.caseData.specialized = {};
+        
+        switch(category) {
+            case 'Ortho':
+                vm.caseData.specialized.ortho = {
+                    bodyPart: '',
+                    painType: '',
+                    swelling: '',
+                    rom: ''
+                };
+                break;
+            case 'Nephro':
+                vm.caseData.specialized.nephro = {
+                    urineOutput: '',
+                    edema: '',
+                    kidneyFunction: '',
+                    bp: ''
+                };
+                break;
+            case 'Cardio':
+                vm.caseData.specialized.cardio = {
+                    heartRate: '',
+                    bp: '',
+                    pulseType: '',
+                    chestPain: ''
+                };
+                break;
+            case 'Neuro':
+                vm.caseData.specialized.neuro = {
+                    affectedArea: '',
+                    sensation: '',
+                    reflexes: ''
+                };
+                break;
+            case 'Gastro':
+                vm.caseData.specialized.gastro = {
+                    agni: '',
+                    appetite: '',
+                    stool: ''
+                };
+                break;
+            case 'Skin':
+                vm.caseData.specialized.skin = {
+                    lesionType: '',
+                    itching: '',
+                    affectedAreas: ''
+                };
+                break;
+            case 'Respiratory':
+                vm.caseData.specialized.respiratory = {
+                    breathing: '',
+                    cough: '',
+                    sputum: ''
+                };
+                break;
+            case 'Ayurvedic Panchakarma':
+                vm.caseData.specialized.panchakarma = {
+                    phase: '',
+                    duration: '',
+                    therapies: {
+                        vamana: false,
+                        virechana: false,
+                        basti: false,
+                        nasya: false,
+                        raktamokshana: false
+                    }
+                };
+                break;
+        }
+    };
+
+    // Open new patient form directly
+    vm.openNewPatientForm = function() {
+        vm.resetForm();
+        vm.isNewPatient = true;
+        vm.showPatientForm = true;
+        vm.showExistingPatient = false;
+        vm.newPatientData = {
+            name: '',
+            gender: 'Male'
+        };
+        vm.caseData = {
+            category: 'Ortho',
+            symptoms: '',
+            prescription: '',
+            specialized: {}
+        };
+        vm.searchTerm = '';
+        initSpecializedData();
+        vm.onCategoryChange();
+        // Scroll to form smoothly
+        setTimeout(function() {
+            document.querySelector('.form-container')?.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }, 100);
+    };
+
     // Initialize database
     async function initialize() {
-        await DatabaseAPI.init();
-        await DatabaseAPI.loadSampleData();
-        await loadStats();
+        if (typeof DatabaseAPI !== 'undefined' && DatabaseAPI.init) {
+            await DatabaseAPI.init();
+            await DatabaseAPI.loadSampleData();
+            await loadStats();
+            console.log('Database initialized successfully');
+        } else {
+            console.error('DatabaseAPI not found - make sure database.js is loaded first');
+        }
     }
-    
+
     // Load statistics
     async function loadStats() {
-        vm.stats = await DatabaseAPI.getStats();
-        vm.$applyAsync();
+        if (typeof DatabaseAPI !== 'undefined' && DatabaseAPI.getStats) {
+            vm.stats = await DatabaseAPI.getStats();
+            vm.$applyAsync();
+        }
     }
-    
+
     // Search patient
     vm.searchPatient = async function() {
         if (!vm.searchTerm) {
             vm.showMessage('Please enter patient ID or name', 'error');
             return;
         }
-        
+
         const db = DatabaseAPI.getDB();
+        if (!db) {
+            vm.showMessage('Database not ready - please refresh', 'error');
+            return;
+        }
+
         const transaction = db.transaction(['patients'], 'readonly');
         const store = transaction.objectStore('patients');
-        
+
         // Try to get by patient_id first
         const getById = store.get(vm.searchTerm);
-        
+
         getById.onsuccess = async function() {
             if (getById.result) {
                 await loadPatientWithCases(getById.result);
             } else {
                 // Search by name
                 const index = store.index('name');
-                const range = IDBKeyRange.bound(vm.searchTerm.toLowerCase(), vm.searchTerm.toLowerCase() + '\uffff');
-                const nameSearch = index.openCursor(range);
+                const nameSearch = index.openCursor();
                 let found = false;
-                
+
                 nameSearch.onsuccess = function(event) {
                     const cursor = event.target.result;
                     if (cursor && !found) {
@@ -105,35 +232,41 @@ app.controller('MainController', ['$http', '$timeout', function($http, $timeout)
             }
         };
     };
-    
+
     // Load patient with case studies
     async function loadPatientWithCases(patient) {
         vm.currentPatient = patient;
         vm.currentPatient.case_studies = [];
-        
+
         const db = DatabaseAPI.getDB();
         const transaction = db.transaction(['case_studies'], 'readonly');
         const index = transaction.objectStore('case_studies').index('patient_id');
         const cases = index.getAll(patient.patient_id);
-        
+
         cases.onsuccess = function() {
             vm.currentPatient.case_studies = cases.result || [];
             vm.isNewPatient = false;
             vm.showPatientForm = true;
             vm.showExistingPatient = true;
-            vm.caseData = { category: 'Ortho', symptoms: '', prescription: '' };
+            vm.caseData = { 
+                category: 'Ortho', 
+                symptoms: '', 
+                prescription: '',
+                specialized: {}
+            };
+            initSpecializedData();
             vm.showMessage('Patient found!', 'success');
             vm.$applyAsync();
         };
     }
-    
+
     // Search by keyword
     vm.searchByKeyword = async function() {
         if (!vm.keyword) {
             vm.showMessage('Please enter keywords to search', 'error');
             return;
         }
-        
+
         const db = DatabaseAPI.getDB();
         const transaction = db.transaction(['case_studies', 'patients'], 'readonly');
         const caseStore = transaction.objectStore('case_studies');
@@ -141,21 +274,21 @@ app.controller('MainController', ['$http', '$timeout', function($http, $timeout)
         const allCases = caseStore.getAll();
         const keywordLower = vm.keyword.toLowerCase();
         const results = [];
-        
+
         allCases.onsuccess = function() {
             const cases = allCases.result;
             const matchingCases = cases.filter(c => 
                 c.symptoms.toLowerCase().includes(keywordLower) || 
                 c.prescription.toLowerCase().includes(keywordLower)
             );
-            
+
             if (matchingCases.length === 0) {
                 vm.searchResults = [];
                 vm.showMessage('No results found', 'error');
                 vm.$applyAsync();
                 return;
             }
-            
+
             let processed = 0;
             matchingCases.forEach(caseStudy => {
                 const getPatient = patientStore.get(caseStudy.patient_id);
@@ -175,38 +308,39 @@ app.controller('MainController', ['$http', '$timeout', function($http, $timeout)
             });
         };
     };
-    
+
     // Save new patient
     vm.savePatient = async function() {
         if (!vm.newPatientData.name || !vm.caseData.symptoms || !vm.caseData.prescription) {
             vm.showMessage('Please fill all required fields', 'error');
             return;
         }
-        
+
         const patientId = 'PAT' + Date.now();
         const newPatient = {
             patient_id: patientId,
             name: vm.newPatientData.name,
             gender: vm.newPatientData.gender,
-            created_at: new Date().toISOString()
+            created_at: new Date().toISOString(),
         };
-        
+
         const newCase = {
             patient_id: patientId,
             category: vm.caseData.category,
             symptoms: vm.caseData.symptoms,
             prescription: vm.caseData.prescription,
-            created_at: new Date().toISOString()
+            specialized: vm.caseData.specialized || {},
+            created_at: new Date().toISOString(),
         };
-        
+
         const db = DatabaseAPI.getDB();
         const transaction = db.transaction(['patients', 'case_studies'], 'readwrite');
         const patientStore = transaction.objectStore('patients');
         const caseStore = transaction.objectStore('case_studies');
-        
+
         patientStore.add(newPatient);
         caseStore.add(newCase);
-        
+
         transaction.oncomplete = function() {
             vm.showMessage(`Patient registered successfully! ID: ${patientId}`, 'success');
             loadStats();
@@ -216,42 +350,48 @@ app.controller('MainController', ['$http', '$timeout', function($http, $timeout)
                 vm.searchPatient();
             }, 500);
         };
-        
+
         transaction.onerror = function() {
             vm.showMessage('Error saving patient', 'error');
         };
     };
-    
+
     // Add case study
     vm.addCaseStudy = async function() {
         if (!vm.caseData.symptoms || !vm.caseData.prescription) {
             vm.showMessage('Please fill symptoms and prescription', 'error');
             return;
         }
-        
+
         const newCase = {
             patient_id: vm.currentPatient.patient_id,
             category: vm.caseData.category,
             symptoms: vm.caseData.symptoms,
             prescription: vm.caseData.prescription,
-            created_at: new Date().toISOString()
+            specialized: vm.caseData.specialized || {},
+            created_at: new Date().toISOString(),
         };
-        
+
         const db = DatabaseAPI.getDB();
         const transaction = db.transaction(['case_studies'], 'readwrite');
         const caseStore = transaction.objectStore('case_studies');
         caseStore.add(newCase);
-        
+
         transaction.oncomplete = function() {
             vm.showMessage('Case study added successfully!', 'success');
             loadStats();
             loadPatientWithCases(vm.currentPatient);
-            vm.caseData = { category: 'Ortho', symptoms: '', prescription: '' };
+            vm.caseData = { 
+                category: 'Ortho', 
+                symptoms: '', 
+                prescription: '',
+                specialized: {}
+            };
             vm.showNewCaseForm = false;
             vm.$applyAsync();
         };
     };
-    
+
     // View patient from search results
     vm.viewPatient = function(patientId) {
         vm.searchTerm = patientId;
@@ -259,25 +399,35 @@ app.controller('MainController', ['$http', '$timeout', function($http, $timeout)
         vm.searchResults = [];
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    
+
     // Cancel form
     vm.cancelForm = function() {
         vm.resetForm();
     };
-    
+
     // Reset form
     vm.resetForm = function() {
         vm.showPatientForm = false;
         vm.showExistingPatient = false;
         vm.isNewPatient = false;
         vm.showNewCaseForm = false;
-        vm.currentPatient = { patient_id: '', name: '', gender: '', case_studies: [] };
+        vm.currentPatient = {
+            patient_id: '',
+            name: '',
+            gender: '',
+            case_studies: []
+        };
         vm.newPatientData = { name: '', gender: 'Male' };
-        vm.caseData = { category: 'Ortho', symptoms: '', prescription: '' };
+        vm.caseData = { 
+            category: 'Ortho', 
+            symptoms: '', 
+            prescription: '',
+            specialized: {}
+        };
         vm.searchTerm = '';
         vm.keyword = '';
     };
-    
+
     // Show message
     vm.showMessage = function(msg, type) {
         vm.message = msg;
@@ -286,7 +436,7 @@ app.controller('MainController', ['$http', '$timeout', function($http, $timeout)
             vm.message = '';
         }, 5000);
     };
-    
-    // Initialize the application
+
+    // Initialize
     initialize();
 }]);
