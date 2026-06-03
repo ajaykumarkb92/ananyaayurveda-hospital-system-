@@ -1,0 +1,57 @@
+<!-- Orthopedic Assessment Form -->
+<div class="specialized-section">
+    <h3 class="specialized-title">🦵 Orthopedic Assessment</h3>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Affected Body Part</label>
+            <select ng-model="vm.caseData.specialized.ortho.bodyPart">
+                <option value="">Select Body Part</option>
+                <option value="Knee">🦵 Knee</option>
+                <option value="Shoulder">💪 Shoulder</option>
+                <option value="Spine">🦴 Spine / Back</option>
+                <option value="Hip">🦵 Hip</option>
+                <option value="Ankle">🦶 Ankle</option>
+                <option value="Wrist">✋ Wrist</option>
+                <option value="Elbow">💪 Elbow</option>
+                <option value="Neck">🦴 Neck (Cervical)</option>
+                <option value="Collarbone">🦴 Collarbone (Clavicle)</option>
+                <option value="Thigh Bone">🦴 Thigh Bone (Femur)</option>
+                <option value="Shin Bone">🦴 Shin Bone (Tibia/Fibula)</option>
+                <option value="Ribs">🦴 Ribs</option>
+            </select>
+        </div>
+        <div class="form-group half">
+            <label>Pain Type (Ayurvedic)</label>
+            <select ng-model="vm.caseData.specialized.ortho.painType">
+                <option value="">Select Pain Type</option>
+                <option value="Vata (Sharp/Moving)">🌬️ Vata (Sharp/Moving Pain)</option>
+                <option value="Pitta (Burning)">🔥 Pitta (Burning Pain)</option>
+                <option value="Kapha (Dull/Heavy)">💧 Kapha (Dull/Heavy Pain)</option>
+                <option value="Mixed">🌀 Mixed Type</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Swelling</label>
+            <select ng-model="vm.caseData.specialized.ortho.swelling">
+                <option value="">Select Swelling Status</option>
+                <option value="None">None</option>
+                <option value="Mild">Mild</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Severe">Severe</option>
+            </select>
+        </div>
+        <div class="form-group half">
+            <label>Range of Motion</label>
+            <select ng-model="vm.caseData.specialized.ortho.rom">
+                <option value="">Select Range of Motion</option>
+                <option value="Normal">Normal</option>
+                <option value="Slightly Limited">Slightly Limited</option>
+                <option value="Moderately Limited">Moderately Limited</option>
+                <option value="Severely Limited">Severely Limited</option>
+                <option value="Fixed">Fixed</option>
+            </select>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,29 @@
+<!-- Panchakarma Treatment Form -->
+<div class="specialized-section">
+    <h3 class="specialized-title">🌀 Panchakarma Treatment Plan</h3>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Treatment Phase</label>
+            <select ng-model="vm.caseData.specialized.panchakarma.phase">
+                <option value="">Select Phase</option>
+                <option value="Purva Karma (Preparation)">Purva Karma (Preparation)</option>
+                <option value="Pradhana Karma (Main)">Pradhana Karma (Main)</option>
+                <option value="Paschat Karma (Post)">Paschat Karma (Post)</option>
+            </select>
+        </div>
+        <div class="form-group half">
+            <label>Duration (Days)</label>
+            <input type="number" ng-model="vm.caseData.specialized.panchakarma.duration" placeholder="Number of days">
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Therapies Selected</label>
+        <div class="checkbox-group">
+            <label><input type="checkbox" ng-model="vm.caseData.specialized.panchakarma.therapies.vamana"> Vamana (Therapeutic Emesis)</label>
+            <label><input type="checkbox" ng-model="vm.caseData.specialized.panchakarma.therapies.virechana"> Virechana (Purgation)</label>
+            <label><input type="checkbox" ng-model="vm.caseData.specialized.panchakarma.therapies.basti"> Basti (Enema)</label>
+            <label><input type="checkbox" ng-model="vm.caseData.specialized.panchakarma.therapies.nasya"> Nasya (Nasal Administration)</label>
+            <label><input type="checkbox" ng-model="vm.caseData.specialized.panchakarma.therapies.raktamokshana"> Raktamokshana (Bloodletting)</label>
+        </div>
+    </div>
+</div>

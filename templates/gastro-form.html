@@ -1,0 +1,30 @@
+<!-- Gastroenterology Assessment Form -->
+<div class="specialized-section">
+    <h3 class="specialized-title">🌿 Gastroenterology Assessment</h3>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Digestion Type (Agni)</label>
+            <select ng-model="vm.caseData.specialized.gastro.agni">
+                <option value="">Select Agni Type</option>
+                <option value="Sama Agni (Balanced)">Sama Agni (Balanced)</option>
+                <option value="Vishama Agni (Irregular/Vata)">Vishama Agni (Irregular/Vata)</option>
+                <option value="Tikshna Agni (Sharp/Pitta)">Tikshna Agni (Sharp/Pitta)</option>
+                <option value="Manda Agni (Slow/Kapha)">Manda Agni (Slow/Kapha)</option>
+            </select>
+        </div>
+        <div class="form-group half">
+            <label>Appetite</label>
+            <select ng-model="vm.caseData.specialized.gastro.appetite">
+                <option value="">Select</option>
+                <option value="Normal">Normal</option>
+                <option value="Increased">Increased</option>
+                <option value="Reduced">Reduced</option>
+                <option value="Absent">Absent</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Stool Quality</label>
+        <textarea rows="2" ng-model="vm.caseData.specialized.gastro.stool" placeholder="Describe consistency, frequency, color..."></textarea>
+    </div>
+</div>

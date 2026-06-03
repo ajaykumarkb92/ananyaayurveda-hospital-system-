@@ -1,0 +1,29 @@
+<!-- Respiratory Assessment Form -->
+<div class="specialized-section">
+    <h3 class="specialized-title">🌬️ Respiratory Assessment</h3>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Breathing Pattern</label>
+            <select ng-model="vm.caseData.specialized.respiratory.breathing">
+                <option value="">Select</option>
+                <option value="Normal">Normal</option>
+                <option value="Rapid">Rapid</option>
+                <option value="Labored">Labored</option>
+                <option value="Wheezing">Wheezing</option>
+            </select>
+        </div>
+        <div class="form-group half">
+            <label>Cough Type</label>
+            <select ng-model="vm.caseData.specialized.respiratory.cough">
+                <option value="">Select</option>
+                <option value="Dry">Dry Cough</option>
+                <option value="Wet">Wet (Productive)</option>
+                <option value="Paroxysmal">Paroxysmal</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Sputum Description</label>
+        <textarea rows="2" ng-model="vm.caseData.specialized.respiratory.sputum" placeholder="Color, consistency, quantity..."></textarea>
+    </div>
+</div>

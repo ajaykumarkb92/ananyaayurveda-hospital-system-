@@ -1,0 +1,32 @@
+<!-- Case Studies Section -->
+<div class="case-studies-section">
+    <div class="case-studies-header">
+        <h3>📚 Previous Case Studies</h3>
+        <button class="btn-outline" ng-click="vm.showNewCaseForm = !vm.showNewCaseForm">
+            {{vm.showNewCaseForm ? 'Cancel' : '+ New Case Study'}}
+        </button>
+    </div>
+    
+    <div ng-repeat="case in vm.currentPatient.case_studies" class="case-card">
+        <h4>{{case.category}}</h4>
+        <span class="case-date">{{case.created_at | date:'medium'}}</span>
+        
+        <!-- Display specialized data based on category -->
+        <div ng-if="case.specialized && case.specialized.ortho" class="specialized-display">
+            <strong>🦵 Body Part:</strong> {{case.specialized.ortho.bodyPart}} |
+            <strong>Pain Type:</strong> {{case.specialized.ortho.painType}} |
+            <strong>Swelling:</strong> {{case.specialized.ortho.swelling}}
+        </div>
+        <div ng-if="case.specialized && case.specialized.nephro" class="specialized-display">
+            <strong>💧 Urine Output:</strong> {{case.specialized.nephro.urineOutput}} |
+            <strong>Edema:</strong> {{case.specialized.nephro.edema}}
+        </div>
+        <div ng-if="case.specialized && case.specialized.cardio" class="specialized-display">
+            <strong>❤️ Heart Rate:</strong> {{case.specialized.cardio.heartRate}} BPM |
+            <strong>BP:</strong> {{case.specialized.cardio.bp}}
+        </div>
+        
+        <p><strong>📝 Symptoms:</strong> {{case.symptoms}}</p>
+        <p><strong>💊 Prescription:</strong> {{case.prescription}}</p>
+    </div>
+</div>

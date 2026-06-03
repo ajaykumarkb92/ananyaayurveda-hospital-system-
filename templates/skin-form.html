@@ -1,0 +1,31 @@
+<!-- Dermatology Assessment Form -->
+<div class="specialized-section">
+    <h3 class="specialized-title">✨ Dermatology Assessment</h3>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Lesion Type</label>
+            <select ng-model="vm.caseData.specialized.skin.lesionType">
+                <option value="">Select Type</option>
+                <option value="Dry/Scaling">Dry/Scaling</option>
+                <option value="Wet/Oozing">Wet/Oozing</option>
+                <option value="Pustules">Pustules</option>
+                <option value="Blisters">Blisters</option>
+                <option value="Patches">Patches</option>
+            </select>
+        </div>
+        <div class="form-group half">
+            <label>Itching Severity</label>
+            <select ng-model="vm.caseData.specialized.skin.itching">
+                <option value="">Select</option>
+                <option value="None">None</option>
+                <option value="Mild">Mild</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Severe">Severe</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Affected Body Areas</label>
+        <input type="text" ng-model="vm.caseData.specialized.skin.affectedAreas" placeholder="e.g., Face, Hands, Back, Legs">
+    </div>
+</div>

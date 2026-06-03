@@ -1,0 +1,10 @@
+<!-- Search Results -->
+<div class="search-results">
+    <h3 style="margin-bottom: 20px;">📋 Found {{vm.searchResults.length}} Results</h3>
+    <div ng-repeat="result in vm.searchResults" class="result-item" ng-click="vm.viewPatient(result.patient_id)">
+        <strong>🆔 {{result.patient_id}}</strong> — <strong>{{result.name}}</strong> ({{result.gender}})<br>
+        <strong>Department:</strong> {{result.category}}<br>
+        <strong>Symptoms:</strong> {{result.symptoms | limitTo:120}}...<br>
+        <small style="color: var(--gray-600);">📅 {{result.created_at | date:'medium'}}</small>
+    </div>
+</div>

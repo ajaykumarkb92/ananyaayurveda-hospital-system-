@@ -1,0 +1,33 @@
+<!-- Search Section -->
+<div class="search-section">
+    <div class="search-grid">
+        <div class="search-card">
+            <h3>🔍 Find Patient</h3>
+            <div class="input-group">
+                <input type="text" 
+                       ng-model="vm.searchTerm" 
+                       placeholder="Enter Patient ID or Name"
+                       ng-enter="vm.searchPatient()">
+                <button class="btn-primary" ng-click="vm.searchPatient()">Search</button>
+            </div>
+        </div>
+        
+        <div class="search-card">
+            <h3>🔎 Search Records</h3>
+            <div class="input-group">
+                <input type="text" 
+                       ng-model="vm.keyword" 
+                       placeholder="Search symptoms or prescriptions"
+                       ng-enter="vm.searchByKeyword()">
+                <button class="btn-primary" ng-click="vm.searchByKeyword()">Search</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- New Patient Button -->
+    <div style="display: flex; justify-content: center; margin-top: 24px;">
+        <button class="btn-new-patient" ng-click="vm.openNewPatientForm()">
+            ✨ + New Patient Registration
+        </button>
+    </div>
+</div>

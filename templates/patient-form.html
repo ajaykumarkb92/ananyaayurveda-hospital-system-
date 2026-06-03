@@ -1,0 +1,77 @@
+<!-- Patient Form -->
+<div class="form-container">
+    <h2 ng-show="!vm.isNewPatient">
+        👤 {{vm.currentPatient.name}}
+        <small>ID: {{vm.currentPatient.patient_id}}</small>
+    </h2>
+    <h2 ng-show="vm.isNewPatient">📝 New Patient Registration</h2>
+    
+    <div ng-show="vm.isNewPatient">
+        <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" 
+                   ng-model="vm.newPatientData.name" 
+                   placeholder="Enter patient's full name">
+        </div>
+        
+        <div class="form-group">
+            <label>Gender *</label>
+            <select ng-model="vm.newPatientData.gender">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="form-group">
+        <label>Department *</label>
+        <select ng-model="vm.caseData.category" ng-change="vm.onCategoryChange()">
+            <option value="Ortho">🦵 Orthopedics</option>
+            <option value="Nephro">💧 Nephrology (Kidney)</option>
+            <option value="Cardio">❤️ Cardiology</option>
+            <option value="Neuro">🧠 Neurology</option>
+            <option value="Gastro">🌿 Gastroenterology</option>
+            <option value="Skin">✨ Dermatology</option>
+            <option value="Respiratory">🌬️ Respiratory</option>
+            <option value="Ayurvedic Panchakarma">🌀 Panchakarma</option>
+        </select>
+    </div>
+    
+    <!-- DYNAMIC SPECIALIZED FORM FIELDS - Include based on category -->
+    <div ng-include="'templates/ortho-form.html'" ng-show="vm.caseData.category === 'Ortho'"></div>
+    <div ng-include="'templates/nephro-form.html'" ng-show="vm.caseData.category === 'Nephro'"></div>
+    <div ng-include="'templates/cardio-form.html'" ng-show="vm.caseData.category === 'Cardio'"></div>
+    <div ng-include="'templates/neuro-form.html'" ng-show="vm.caseData.category === 'Neuro'"></div>
+    <div ng-include="'templates/gastro-form.html'" ng-show="vm.caseData.category === 'Gastro'"></div>
+    <div ng-include="'templates/skin-form.html'" ng-show="vm.caseData.category === 'Skin'"></div>
+    <div ng-include="'templates/respiratory-form.html'" ng-show="vm.caseData.category === 'Respiratory'"></div>
+    <div ng-include="'templates/panchakarma-form.html'" ng-show="vm.caseData.category === 'Ayurvedic Panchakarma'"></div>
+    
+    <!-- Common Fields -->
+    <div class="form-group">
+        <label>📋 Symptoms & Patient History</label>
+        <textarea rows="4" 
+                  ng-model="vm.caseData.symptoms" 
+                  placeholder="Document the patient's condition, symptoms, and what they described..."></textarea>
+    </div>
+    
+    <div class="form-group">
+        <label>💊 Prescription & Treatment Plan</label>
+        <textarea rows="4" 
+                  ng-model="vm.caseData.prescription" 
+                  placeholder="Ayurvedic medicines, dosages, diet recommendations, and lifestyle changes..."></textarea>
+    </div>
+    
+    <div class="button-group">
+        <button class="btn-primary" ng-click="vm.savePatient()" ng-show="vm.isNewPatient">
+            💾 Save Patient Record
+        </button>
+        <button class="btn-primary" ng-click="vm.addCaseStudy()" ng-show="!vm.isNewPatient">
+            ➕ Add Case Study
+        </button>
+        <button class="btn-secondary" ng-click="vm.cancelForm()">
+            Cancel
+        </button>
+    </div>
+</div>

@@ -1,0 +1,24 @@
+<!-- Neurology Assessment Form -->
+<div class="specialized-section">
+    <h3 class="specialized-title">🧠 Neurology Assessment</h3>
+    <div class="form-row">
+        <div class="form-group half">
+            <label>Affected Area</label>
+            <input type="text" ng-model="vm.caseData.specialized.neuro.affectedArea" placeholder="e.g., Left arm, Both legs">
+        </div>
+        <div class="form-group half">
+            <label>Sensation Changes</label>
+            <select ng-model="vm.caseData.specialized.neuro.sensation">
+                <option value="">Select</option>
+                <option value="Numbness">Numbness</option>
+                <option value="Tingling">Tingling</option>
+                <option value="Burning">Burning</option>
+                <option value="Loss of Sensation">Loss of Sensation</option>
+            </select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Reflexes</label>
+        <textarea rows="2" ng-model="vm.caseData.specialized.neuro.reflexes" placeholder="Describe reflex response..."></textarea>
+    </div>
+</div>
